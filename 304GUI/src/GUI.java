@@ -258,10 +258,10 @@ class ExecPanel extends JPanel {
     }
 
 }
-class ExecPanel extends JPanel {
+class DeletePanel extends JPanel {
 
 
-    public ExecPanel () {
+    public DeletePanel () {
 
         setPreferredSize (new Dimension (395, 156));
 
@@ -272,7 +272,7 @@ class ExecPanel extends JPanel {
 class UpdatePanel extends JPanel {
 
 
-    public ExecPanel () {
+    public UpdatePanel () {
 
         setPreferredSize (new Dimension (395, 156));
 
