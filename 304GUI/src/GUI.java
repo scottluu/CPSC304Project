@@ -378,9 +378,25 @@ class ExecPanel extends JPanel {
 class DeletePanel extends JPanel {
 
 
-    public DeletePanel () {
+    JLabel l1, l2;
+    JTextField t1;
+    JButton b1;
 
+    public DeletePanel () {
+        l1 = new JLabel("Fire Employee");
+        l2 = new JLabel("Employee Number");
+        t1 = new JTextField("test");
+        b1 = new JButton("Fire!");
+        setLayout(null);
         setPreferredSize (new Dimension (395, 156));
+        b1.setBounds(310,120,70,30);
+        l1.setBounds(0,0,120,30);
+        l2.setBounds(0,20,120,30);
+        t1.setBounds(130 ,20,70,30);
+        add(l1);
+        add(l2);
+        add(t1);
+        add(b1);
 
 
     }
@@ -389,11 +405,26 @@ class DeletePanel extends JPanel {
 class UpdatePanel extends JPanel {
 
 
+    JLabel l1,l2,l3,l4;
+    JTextField t1,t2,t3,t4;
     public UpdatePanel () {
-
+        l1 = new JLabel("Price");
+        l2 = new JLabel("Name");
+        l3 = new JLabel("UPCcode");
+        l4 = new JLabel("Stock");
+        t1 = new JTextField(10);
+        t2 = new JTextField(10);
+        t3 = new JTextField(10);
+        t4 = new JTextField(10);
         setPreferredSize (new Dimension (395, 156));
-
-
+        add(l1);
+        add(l2);
+        add(l3);
+        add(l4);
+        add(t1);
+        add(t2);
+        add(t3);
+        add(t4);
     }
 
 }
