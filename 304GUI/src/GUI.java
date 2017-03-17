@@ -325,9 +325,10 @@ class EmpPanel extends JPanel {
 
 
     public EmpPanel () {
-            JButton update, delete;
+            JButton update, delete, inventory;
         update = new JButton("Update");
         delete = new JButton("Delete");
+        inventory = new JButton("Inventory");
         setPreferredSize (new Dimension (395, 156));
         delete.addActionListener(new ActionListener() {
             @Override
@@ -349,8 +350,18 @@ class EmpPanel extends JPanel {
                 frame.setVisible(true);
             }
         });
+        inventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame ("Inventory Panel");
+                frame.getContentPane().add(new InventoryPanel());
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
         add(delete);
         add(update);
+        add(inventory);
 
     }
 
@@ -359,13 +370,40 @@ class ExecPanel extends JPanel {
 
 
     public ExecPanel () {
+        JButton bestMonth;
+        JButton noStores;
+        bestMonth = new JButton("Highest Grossing Month");
+        noStores = new JButton("# of Stores");
 
         setPreferredSize (new Dimension (395, 156));
+        bestMonth.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame ("Delete Panel");
+                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
+                frame.getContentPane().add (new DeletePanel());
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
+        noStores.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame ("Update Panel");
+                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
+                frame.getContentPane().add (new UpdatePanel());
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
 
+        add(bestMonth);
+        add(noStores);
 
     }
 
 }
+
 class DeletePanel extends JPanel {
 
 
@@ -388,10 +426,7 @@ class DeletePanel extends JPanel {
         add(l2);
         add(t1);
         add(b1);
-
-
     }
-
 }
 class UpdatePanel extends JPanel {
 
@@ -407,7 +442,16 @@ class UpdatePanel extends JPanel {
         t2 = new JTextField(10);
         t3 = new JTextField(10);
         t4 = new JTextField(10);
-        setPreferredSize (new Dimension (395, 156));
+        l1.setBounds(0,0,120,40);
+        l2.setBounds(120,0,120,40);
+        l3.setBounds(240,0,120,40);
+        l4.setBounds(360,0,120,40);
+        t1.setBounds(0,40,120,20);
+        t2.setBounds(120,40,120,20);
+        t3.setBounds(240,40,120,20);
+        t4.setBounds(360,40,120,20);
+        setPreferredSize (new Dimension (400, 156));
+        setLayout(null);
         add(l1);
         add(l2);
         add(l3);
@@ -418,4 +462,28 @@ class UpdatePanel extends JPanel {
         add(t4);
     }
 
+}
+class InventoryPanel extends JPanel {
+
+
+    JLabel l1, l2;
+    JTextField t1;
+    JButton b1;
+
+    public InventoryPanel () {
+        l1 = new JLabel("Inventory");
+        l2 = new JLabel("Employee Number");
+        t1 = new JTextField();
+        b1 = new JButton("Go");
+        setLayout(null);
+        setPreferredSize (new Dimension (395, 156));
+        b1.setBounds(310,120,70,30);
+        l1.setBounds(0,0,120,30);
+        l2.setBounds(0,20,120,30);
+        t1.setBounds(130 ,20,70,30);
+        add(l1);
+        add(l2);
+        add(t1);
+        add(b1);
+    }
 }
