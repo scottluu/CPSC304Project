@@ -372,8 +372,10 @@ class ExecPanel extends JPanel {
     public ExecPanel () {
         JButton bestMonth;
         JButton noStores;
+        JButton worstMonth;
         bestMonth = new JButton("Highest Grossing Month");
         noStores = new JButton("# of Stores");
+        worstMonth = new JButton("Lowest Grossing Month");
 
         setPreferredSize (new Dimension (395, 156));
         bestMonth.addActionListener(new ActionListener() {
@@ -396,9 +398,20 @@ class ExecPanel extends JPanel {
                 frame.setVisible(true);
             }
         });
+        worstMonth.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = new JFrame ("Update Panel");
+                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
+                frame.getContentPane().add (new UpdatePanel());
+                frame.pack();
+                frame.setVisible(true);
+            }
+        });
 
         add(bestMonth);
         add(noStores);
+        add(worstMonth);
 
     }
 
@@ -422,6 +435,14 @@ class DeletePanel extends JPanel {
         l1.setBounds(0,0,120,30);
         l2.setBounds(0,20,120,30);
         t1.setBounds(130 ,20,70,30);
+        b1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = t1.getText();
+                System.out.print(text);
+                //jcomp4.selectAll();
+            }
+        });
         add(l1);
         add(l2);
         add(t1);
@@ -433,25 +454,40 @@ class UpdatePanel extends JPanel {
 
     JLabel l1,l2,l3,l4;
     JTextField t1,t2,t3,t4;
+    JButton b1;
     public UpdatePanel () {
-        l1 = new JLabel("Price");
+        l1 = new JLabel("UPCcode");
         l2 = new JLabel("Name");
-        l3 = new JLabel("UPCcode");
+        l3 = new JLabel("Price");
         l4 = new JLabel("Stock");
         t1 = new JTextField(10);
         t2 = new JTextField(10);
         t3 = new JTextField(10);
         t4 = new JTextField(10);
+        b1 = new JButton("Go");
         l1.setBounds(0,0,120,40);
-        l2.setBounds(120,0,120,40);
-        l3.setBounds(240,0,120,40);
-        l4.setBounds(360,0,120,40);
+        l2.setBounds(0,60,120,40);
+        l3.setBounds(120,60,120,40);
+        l4.setBounds(240,60,120,40);
         t1.setBounds(0,40,120,20);
-        t2.setBounds(120,40,120,20);
-        t3.setBounds(240,40,120,20);
-        t4.setBounds(360,40,120,20);
-        setPreferredSize (new Dimension (400, 156));
+        t2.setBounds(0,100,120,20);
+        t3.setBounds(120,100,120,20);
+        t4.setBounds(240,100,120,20);
+        b1.setBounds(360, 100,60,40);
+        setPreferredSize (new Dimension (430, 156));
         setLayout(null);
+        b1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String UPCcode = t1.getText();
+                String name = t2.getText();
+                String price = t3.getText();
+                String stock = t4.getText();
+
+                System.out.print(UPCcode);
+                //jcomp4.selectAll();
+            }
+        });
         add(l1);
         add(l2);
         add(l3);
@@ -460,6 +496,7 @@ class UpdatePanel extends JPanel {
         add(t2);
         add(t3);
         add(t4);
+        add(b1);
     }
 
 }
@@ -481,6 +518,14 @@ class InventoryPanel extends JPanel {
         l1.setBounds(0,0,120,30);
         l2.setBounds(0,20,120,30);
         t1.setBounds(130 ,20,70,30);
+        b1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = t1.getText();
+                System.out.print(text);
+                //jcomp4.selectAll();
+            }
+        });
         add(l1);
         add(l2);
         add(t1);
