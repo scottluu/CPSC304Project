@@ -20,6 +20,13 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 
 public class GUI extends JPanel implements ActionListener {
@@ -33,6 +40,15 @@ public class GUI extends JPanel implements ActionListener {
     // Division for stock greater than 1?
     // Employee update products/transactions delete
     // Executives can aggregate/ nested aggregate
+	
+	private final String userName = "cs304proj";
+    private final String password = "password";
+	private final String serverName = "josephso.me";
+	private final int portNumber = 3306;
+	private final String dbName = "CS304Project";
+	private Statement stmt;
+	private Connection conn;
+	private ResultSet rs;
 
     public GUI() {
         //Construct Components
@@ -122,6 +138,15 @@ public class GUI extends JPanel implements ActionListener {
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+				Connection con = null;
+		Properties connectionProps = new Properties();
+		connectionProps.put("user", this.userName);
+		connectionProps.put("password", this.password);
+
+		con = DriverManager.getConnection("jdbc:mysql://"
+				+ this.serverName + ":" + this.portNumber + "/" + this.dbName,
+				connectionProps);
+
                 createAndShowGUI();
             }
         });
@@ -523,6 +548,14 @@ class InventoryPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
                 System.out.print(text);
+				String query = "";
+				stmt = this.conn.createStatement();
+				rs = stmt.executeQuery(query);
+				// stmt.execute(statement) for non queries
+				rs.first();
+				while (rs.next != null) {
+					//print each result
+				}
                 //jcomp4.selectAll();
             }
         });
