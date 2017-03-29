@@ -143,7 +143,7 @@ public class GUI extends JPanel implements ActionListener {
 		connectionProps.put("user", this.userName);
 		connectionProps.put("password", this.password);
 
-		con = DriverManager.getConnection("jdbc:mysql://"
+		conn = DriverManager.getConnection("jdbc:mysql://"
 				+ this.serverName + ":" + this.portNumber + "/" + this.dbName,
 				connectionProps);
 
