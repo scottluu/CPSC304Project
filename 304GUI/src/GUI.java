@@ -19,14 +19,9 @@ import java.awt.event.ComponentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import java.awt.event.KeyEvent;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 
 
 public class GUI extends JPanel implements ActionListener {
@@ -55,6 +50,17 @@ public class GUI extends JPanel implements ActionListener {
         b1 = new JButton("CUSTOMER");
         b1.setVerticalTextPosition(AbstractButton.CENTER);
         b1.setHorizontalTextPosition(AbstractButton.LEADING);
+        conn = null;
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", this.userName);
+        connectionProps.put("password", this.password);
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://"
+                            + this.serverName + ":" + this.portNumber + "/" + this.dbName,
+                    connectionProps);
+        } catch (Exception e) {
+            System.out.print("error on connection");
+        }
 
         b1.addActionListener(new ActionListener() {
             @Override
@@ -62,7 +68,7 @@ public class GUI extends JPanel implements ActionListener {
                 JFrame frame = new JFrame ("Customer Panel");
                 //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
                 
-                frame.getContentPane().add (new CustPanel());
+                frame.getContentPane().add (new CustPanel(conn));
                 frame.addComponentListener(new ComponentAdapter() {
                 	public void componentResized(ComponentEvent e) {
                 		CustPanel temp = (CustPanel) frame.getContentPane().getComponent(0);
@@ -88,7 +94,7 @@ public class GUI extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame ("employee panel");
                 //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new EmpPanel());
+                frame.getContentPane().add (new EmpPanel(conn));
                 frame.pack();
                 frame.setVisible(true);
             }
@@ -98,7 +104,7 @@ public class GUI extends JPanel implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame ("exec panel");
                 //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new ExecPanel());
+                frame.getContentPane().add (new ExecPanel(conn));
                 frame.pack();
                 frame.setVisible(true);
             }
@@ -138,15 +144,6 @@ public class GUI extends JPanel implements ActionListener {
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-				Connection con = null;
-		Properties connectionProps = new Properties();
-		connectionProps.put("user", this.userName);
-		connectionProps.put("password", this.password);
-
-		con = DriverManager.getConnection("jdbc:mysql://"
-				+ this.serverName + ":" + this.portNumber + "/" + this.dbName,
-				connectionProps);
-
                 createAndShowGUI();
             }
         });
@@ -156,62 +153,6 @@ public class GUI extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
-}
-class MyPanel2 extends JPanel {
-    private JButton jcomp1;
-    private JTextField jcomp4;
-
-    public MyPanel2() {
-        //construct components
-        jcomp1 = new JButton ("test1");
-        jcomp4 = new JTextField (5);
-
-        jcomp1.setVerticalTextPosition(AbstractButton.CENTER);
-        jcomp1.setHorizontalTextPosition(AbstractButton.LEADING);
-        //adjust size and set layout
-        setPreferredSize (new Dimension (395, 156));
-        setLayout (null);
-        jcomp4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String text = jcomp4.getText();
-                System.out.print(text);
-                //jcomp4.selectAll();
-            }
-        });
-        //set component bounds (only needed by Absolute Positioning)
-        jcomp1.setBounds (20, 45, 100, 25);
-
-        jcomp4.setBounds (205, 115, 100, 25);
-
-        //add components
-        add (jcomp1);
-
-        add (jcomp4);
-    }
-}
-class MyPanel3 extends JPanel {
-    JList list;
-
-    public MyPanel3 (String[] b) {
-        list = new JList(b);
-         //data has type Object[]
-        //list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
-        setPreferredSize (new Dimension (395, 156));
-        setLayout (null);
-        JScrollPane listScroller = new JScrollPane(list,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        listScroller.setViewportView(list);
-        //listScroller.getViewport().setPreferredSize();
-        //listScroller.setPreferredSize(new Dimension(20, 80));
-        //listScroller.setAlignmentX(LEFT_ALIGNMENT);
-        list.setBounds (0, 0, 395, 156);
-
-        add(list);
-
-    }
-
 }
 class TablePanel extends JPanel {
 	JTable t3;
@@ -227,7 +168,6 @@ class TablePanel extends JPanel {
         add(sp1);
     }
 }
-
 class CustPanel extends JPanel {
     JLabel l1, l2;
     JButton b1;
@@ -238,8 +178,11 @@ class CustPanel extends JPanel {
     public int width;
     public int height;
     boolean valid = true;
+    private Statement stmt;
+    private Connection conn;
+    private ResultSet rs;
 
-    public void updateResults() {
+    public void updateResults(Connection c) {
     	if (valid) {
     		if (cb1.isSelected()) {
 
@@ -247,6 +190,20 @@ class CustPanel extends JPanel {
     		if (cb2.isSelected()) {
     			
     		}
+            try {
+                stmt = c.createStatement();
+                stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " );
+                // stmt.execute(statement) for non queries
+                rs.first();
+                ResultSetMetaData rsmd = rs.getMetaData();
+                System.out.println(rsmd.getColumnCount());
+                while (rs.next()) {
+                    //print each result
+                    System.out.print(rs.getString("REGNNAME"));
+                }
+            } catch (Exception d) {
+
+            }
     		JFrame tableFrame = new JFrame("Results");
     		String[][] data = {{"1", "2"}};
     		String[] cols = {"1","2"};
@@ -273,7 +230,7 @@ class CustPanel extends JPanel {
         b1.setBounds(width-100,    height-30, 100, 25);
     }
 
-    public CustPanel () {
+    public CustPanel (Connection c) {
 
         l1 = new JLabel("Price");
         l2 = new JLabel("Name");
@@ -328,7 +285,7 @@ class CustPanel extends JPanel {
         b1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateResults();
+                updateResults(c);
             }
         });
         
@@ -349,7 +306,7 @@ class CustPanel extends JPanel {
 class EmpPanel extends JPanel {
 
 
-    public EmpPanel () {
+    public EmpPanel (Connection c) {
             JButton update, delete, inventory;
         update = new JButton("Update");
         delete = new JButton("Delete");
@@ -360,7 +317,7 @@ class EmpPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame ("Delete Panel");
                 //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new DeletePanel());
+                frame.getContentPane().add (new DeletePanel(c));
                 frame.pack();
                 frame.setVisible(true);
             }
@@ -370,7 +327,7 @@ class EmpPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame ("Update Panel");
                 //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new UpdatePanel());
+                frame.getContentPane().add (new UpdatePanel(c));
                 frame.pack();
                 frame.setVisible(true);
             }
@@ -379,7 +336,7 @@ class EmpPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = new JFrame ("Inventory Panel");
-                frame.getContentPane().add(new InventoryPanel());
+                frame.getContentPane().add(new InventoryPanel(c));
                 frame.pack();
                 frame.setVisible(true);
             }
@@ -392,9 +349,11 @@ class EmpPanel extends JPanel {
 
 }
 class ExecPanel extends JPanel {
+    private Statement stmt;
+    private Connection conn;
+    private ResultSet rs;
 
-
-    public ExecPanel () {
+    public ExecPanel (Connection c) {
         JButton bestMonth;
         JButton noStores;
         JButton worstMonth;
@@ -402,35 +361,39 @@ class ExecPanel extends JPanel {
         noStores = new JButton("# of Stores");
         worstMonth = new JButton("Lowest Grossing Month");
 
+
         setPreferredSize (new Dimension (395, 156));
         bestMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame ("Delete Panel");
-                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new DeletePanel());
-                frame.pack();
-                frame.setVisible(true);
+                try {
+                    stmt = c.createStatement();
+                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                } catch (Exception d) {
+
+                }
             }
         });
         noStores.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame ("Update Panel");
-                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new UpdatePanel());
-                frame.pack();
-                frame.setVisible(true);
+                try {
+                    stmt = c.createStatement();
+                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                } catch (Exception d) {
+
+                }
             }
         });
         worstMonth.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = new JFrame ("Update Panel");
-                //frame.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-                frame.getContentPane().add (new UpdatePanel());
-                frame.pack();
-                frame.setVisible(true);
+                try {
+                    stmt = c.createStatement();
+                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                } catch (Exception d) {
+
+                }
             }
         });
 
@@ -441,18 +404,20 @@ class ExecPanel extends JPanel {
     }
 
 }
-
 class DeletePanel extends JPanel {
 
 
     JLabel l1, l2;
     JTextField t1;
     JButton b1;
+    private Statement stmt;
+    private Connection conn;
+    private ResultSet rs;
 
-    public DeletePanel () {
+    public DeletePanel (Connection c) {
         l1 = new JLabel("Fire Employee");
         l2 = new JLabel("Employee Number");
-        t1 = new JTextField("test");
+        t1 = new JTextField("");
         b1 = new JButton("Fire!");
         setLayout(null);
         setPreferredSize (new Dimension (395, 156));
@@ -464,7 +429,30 @@ class DeletePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
-                System.out.print(text);
+                //System.out.print(text);
+                try {
+                    stmt = c.createStatement();
+                    //stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " + text);
+                    // stmt.execute(statement) for non queries
+                    int i = 0;
+                    rs = stmt.executeQuery("SELECT * FROM REGION");
+                    String[] cols = {"REGION", "ADD"};
+                    String[][] table = new String[5][2];
+                    while (rs.next()) {
+                        //print each result
+                        System.out.println(rs.getString("REGNNAME"));
+                        table[i][0] = rs.getString("REGNNAME");
+                        table[i][1] = "A";
+                        i++;
+                    }
+                    System.out.print(table[1][1]);
+                    JFrame tableFrame = new JFrame("Results");
+                    tableFrame.getContentPane().add(new TablePanel(table, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
+                } catch (Exception d) {
+
+                }
                 //jcomp4.selectAll();
             }
         });
@@ -480,7 +468,10 @@ class UpdatePanel extends JPanel {
     JLabel l1,l2,l3,l4;
     JTextField t1,t2,t3,t4;
     JButton b1;
-    public UpdatePanel () {
+    private Statement stmt;
+    private Connection conn;
+    private ResultSet rs;
+    public UpdatePanel (Connection c) {
         l1 = new JLabel("UPCcode");
         l2 = new JLabel("Name");
         l3 = new JLabel("Price");
@@ -508,7 +499,20 @@ class UpdatePanel extends JPanel {
                 String name = t2.getText();
                 String price = t3.getText();
                 String stock = t4.getText();
+                if (UPCcode.equals("")) {
 
+                } else if (name.equals("")){
+
+                } else if (price.equals("")) {
+
+                } else {
+                    try {
+                        stmt = c.createStatement();
+                        stmt.execute("UPDATE PRODUCT SET name = " + name + ", price = " + price + "WHERE upccode = " + UPCcode);
+                    } catch (Exception d) {
+                        System.out.print("Update error");
+                    }
+                }
                 System.out.print(UPCcode);
                 //jcomp4.selectAll();
             }
@@ -531,8 +535,11 @@ class InventoryPanel extends JPanel {
     JLabel l1, l2;
     JTextField t1;
     JButton b1;
+    private Statement stmt;
+    private Connection conn;
+    private ResultSet rs;
 
-    public InventoryPanel () {
+    public InventoryPanel (Connection c) {
         l1 = new JLabel("Inventory");
         l2 = new JLabel("Employee Number");
         t1 = new JTextField();
@@ -548,14 +555,13 @@ class InventoryPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
                 System.out.print(text);
-				String query = "";
-				stmt = this.conn.createStatement();
-				rs = stmt.executeQuery(query);
-				// stmt.execute(statement) for non queries
-				rs.first();
-				while (rs.next != null) {
-					//print each result
-				}
+                try {
+                    stmt = c.createStatement();
+                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+
+                } catch (Exception d) {
+
+                }
                 //jcomp4.selectAll();
             }
         });
