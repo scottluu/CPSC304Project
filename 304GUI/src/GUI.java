@@ -188,25 +188,27 @@ class CustPanel extends JPanel {
 
     		}
     		if (cb2.isSelected()) {
-    			
+
     		}
+            String[][] data = new String[20][3];
             try {
                 stmt = c.createStatement();
-                stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " );
+                rs = stmt.executeQuery("SELECT * FROM PRODUCTS WHERE PRODPRICE < 10");
                 // stmt.execute(statement) for non queries
-                rs.first();
-                ResultSetMetaData rsmd = rs.getMetaData();
-                System.out.println(rsmd.getColumnCount());
+                int i = 0;
                 while (rs.next()) {
                     //print each result
-                    System.out.print(rs.getString("REGNNAME"));
+                    data[i][0] = rs.getString("UPCcode");
+                    data[i][2] = rs.getString("PRODNAME");
+                    data[i][1] = rs.getString("PRODPRICE");
+                    i++;
                 }
             } catch (Exception d) {
 
             }
     		JFrame tableFrame = new JFrame("Results");
-    		String[][] data = {{"1", "2"}};
-    		String[] cols = {"1","2"};
+
+    		String[] cols = {"UPCcode","PRODNAME","PRODPRICE"};
     		tableFrame.getContentPane().add(new TablePanel(data, cols));
     		tableFrame.pack();
     		tableFrame.setVisible(true);
