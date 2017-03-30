@@ -7,6 +7,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import com.alee.laf.WebLookAndFeel;
 import javax.swing.ImageIcon;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -144,6 +145,7 @@ public class GUI extends JPanel implements ActionListener {
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                WebLookAndFeel.install();
                 createAndShowGUI();
             }
         });
@@ -387,10 +389,13 @@ class ExecPanel extends JPanel {
     public ExecPanel (Connection c) {
         JButton bestMonth;
         JButton noStores;
-        JButton worstMonth;
+        JButton worstMonth, avgSales, storeSales, highestPrice, lowestPrice;
+        //SELECT AVG(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM
+
         bestMonth = new JButton("Highest Grossing Month");
         noStores = new JButton("# of Stores");
         worstMonth = new JButton("Lowest Grossing Month");
+        avgSales = new JButton("Average Sales");
 
 
         setPreferredSize (new Dimension (395, 156));
@@ -410,7 +415,7 @@ class ExecPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     stmt = c.createStatement();
-                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                    stmt.executeQuery("SELECT SUM(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
                 } catch (Exception d) {
 
                 }
