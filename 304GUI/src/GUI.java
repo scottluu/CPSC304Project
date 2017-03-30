@@ -190,39 +190,41 @@ class CustPanel extends JPanel {
     			columns = "PRODPRICE";
     		}
     		if (cb2.isSelected()) {
-    			if columns.equals("") {
+    			if (columns.equals("")) {
     				columns += "PRODNAME";
     			} else {
-    				columns += ", PRODNAME"
+    				columns += ", PRODNAME";
     			}
     		}
     		if (rb1.isSelected()) {
     			where = "WHERE PRODPRICE <= " + t1.getText();
     		} else if (rb2.isSelected()) {
-    			where = "WHERE PRODPRICE > " + t2.getText();
+    			where = "WHERE PRODPRICE > " + t1.getText();
     		}
-    		if (!t2.getText.equals("")) {
+    		if (!t2.getText().equals("")) {
     			if (where.equals("")) {
     				where = "WHERE PRODNAME LIKE '%" + t2.getText() + "%'";
     			} else {
-    				where = "AND PRODNAME LIKE '%" + t2.getText() + "%'";
+    				where += " AND PRODNAME LIKE '%" + t2.getText() + "%'";
     			}
     		}
             String[][] data = new String[20][3];
             try {
                 stmt = c.createStatement();
+                System.out.println("SELECT " + columns + " FROM PRODUCTS " + where);
                 rs = stmt.executeQuery("SELECT " + columns + " FROM PRODUCTS " + where);
                 // stmt.execute(statement) for non queries
                 int i = 0;
                 while (rs.next()) {
                     //print each result
-                    data[i][0] = rs.getString("UPCcode");
-                    data[i][2] = rs.getString("PRODNAME");
-                    data[i][1] = rs.getString("PRODPRICE");
-                    i++;
+                    System.out.println(rs.getString("PRODNAME"));
+//                    data[i][0] = rs.getString("UPCcode");
+//                    data[i][2] = rs.getString("PRODNAME");
+//                    data[i][1] = rs.getString("PRODPRICE");
+//                    i++;
                 }
             } catch (Exception d) {
-
+                System.out.print("it didnt work");
             }
     		JFrame tableFrame = new JFrame("Results");
 
