@@ -183,15 +183,15 @@ class CustPanel extends JPanel {
     private ResultSet rs;
 
     public void updateResults(Connection c) {
-    	String columns = "";
+    	String columns = "*";
     	String where = "";
     	if (valid) {
     		if (cb1.isSelected()) {
     			columns = "PRODPRICE";
     		}
     		if (cb2.isSelected()) {
-    			if (columns.equals("")) {
-    				columns += "PRODNAME";
+    			if (columns.equals("*")) {
+    				columns = "PRODNAME";
     			} else {
     				columns += ", PRODNAME";
     			}
@@ -217,11 +217,20 @@ class CustPanel extends JPanel {
                 int i = 0;
                 while (rs.next()) {
                     //print each result
-                    System.out.println(rs.getString("PRODNAME"));
-//                    data[i][0] = rs.getString("UPCcode");
-//                    data[i][2] = rs.getString("PRODNAME");
-//                    data[i][1] = rs.getString("PRODPRICE");
-//                    i++;
+//                    System.out.println(rs.getString("PRODNAME"));
+                	if (columns.equals("*")) {
+                		data[i][0] = rs.getString("UPCcode");
+                    	data[i][2] = rs.getString("PRODNAME");
+                    	data[i][1] = rs.getString("PRODPRICE");
+                	} else if ((columns.contains("PRODNAME"))&&(columns.contains("PRODPRICE"))) {
+                    	data[i][0] = rs.getString("PRODNAME");
+                    	data[i][1] = rs.getString("PRODPRICE");
+                	} else if (columns.contains("PRODNAME")) {
+                		data[i][0] = rs.getString("PRODNAME");
+                	} else {
+                		data[i][0] = rs.getString("PRODPRICE");
+                	}
+                    i++;
                 }
             } catch (Exception d) {
                 System.out.print("it didnt work");
