@@ -183,17 +183,35 @@ class CustPanel extends JPanel {
     private ResultSet rs;
 
     public void updateResults(Connection c) {
+    	String columns = "";
+    	String where = "";
     	if (valid) {
     		if (cb1.isSelected()) {
-
+    			columns = "PRODPRICE";
     		}
     		if (cb2.isSelected()) {
-
+    			if columns.equals("") {
+    				columns += "PRODNAME";
+    			} else {
+    				columns += ", PRODNAME"
+    			}
+    		}
+    		if (rb1.isSelected()) {
+    			where = "WHERE PRODPRICE <= " + t1.getText();
+    		} else if (rb2.isSelected()) {
+    			where = "WHERE PRODPRICE > " + t2.getText();
+    		}
+    		if (!t2.getText.equals("")) {
+    			if (where.equals("")) {
+    				where = "WHERE PRODNAME LIKE '%" + t2.getText() + "%'";
+    			} else {
+    				where = "AND PRODNAME LIKE '%" + t2.getText() + "%'";
+    			}
     		}
             String[][] data = new String[20][3];
             try {
                 stmt = c.createStatement();
-                rs = stmt.executeQuery("SELECT * FROM PRODUCTS WHERE PRODPRICE < 10");
+                rs = stmt.executeQuery("SELECT " + columns + " FROM PRODUCTS " + where);
                 // stmt.execute(statement) for non queries
                 int i = 0;
                 while (rs.next()) {
