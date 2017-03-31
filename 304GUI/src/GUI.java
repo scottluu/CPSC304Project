@@ -56,6 +56,7 @@ public class GUI extends JPanel implements ActionListener {
         connectionProps.put("user", this.userName);
         connectionProps.put("password", this.password);
         try {
+            Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://"
                             + this.serverName + ":" + this.portNumber + "/" + this.dbName,
                     connectionProps);
@@ -235,8 +236,20 @@ class CustPanel extends JPanel {
                 System.out.print("it didnt work");
             }
     		JFrame tableFrame = new JFrame("Results");
-
-    		String[] cols = {"UPCcode","PRODNAME","PRODPRICE"};
+            String[] cols = {};
+            String[][] cols2 = {{"UPCcode","PRODNAME","PRODPRICE"},
+                                {"PRODNAME","PRODPRICE"},
+                                {"PRODNAME"},
+                                {"PRODPRICE"}};
+            if (columns.equals("*")) {
+    		    cols = cols2[0];
+            } else if (columns.contains(",")) {
+                cols = cols2[1];
+            } else if (columns.contains("PRODNAME")) {
+                cols = cols2[2];
+            } else {
+                cols = cols2[3];
+            }
     		tableFrame.getContentPane().add(new TablePanel(data, cols));
     		tableFrame.pack();
     		tableFrame.setVisible(true);
