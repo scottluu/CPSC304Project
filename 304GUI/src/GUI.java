@@ -122,8 +122,6 @@ public class GUI extends JPanel implements ActionListener {
         JFrame frame = new JFrame("304Project");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Add the ubiquitous "Hello World" label.
-
         frame.getContentPane().add(new GUI());
 
         GUI newContentPane = new GUI();
@@ -213,17 +211,16 @@ class CustPanel extends JPanel {
             String[][] data = new String[20][3];
             try {
                 stmt = c.createStatement();
-                System.out.println("SELECT " + columns + " FROM PRODUCTS " + where);
+
                 rs = stmt.executeQuery("SELECT " + columns + " FROM PRODUCTS " + where);
                 // stmt.execute(statement) for non queries
                 int i = 0;
                 while (rs.next()) {
-                    //print each result
-//                    System.out.println(rs.getString("PRODNAME"));
+
                 	if (columns.equals("*")) {
                 		data[i][0] = rs.getString("UPCcode");
-                    	data[i][2] = rs.getString("PRODNAME");
-                    	data[i][1] = rs.getString("PRODPRICE");
+                    	data[i][1] = rs.getString("PRODNAME");
+                    	data[i][2] = rs.getString("PRODPRICE");
                 	} else if ((columns.contains("PRODNAME"))&&(columns.contains("PRODPRICE"))) {
                     	data[i][0] = rs.getString("PRODNAME");
                     	data[i][1] = rs.getString("PRODPRICE");
@@ -343,7 +340,7 @@ class EmpPanel extends JPanel {
             JButton update, delete, inventory;
         update = new JButton("Update");
         delete = new JButton("Delete");
-        inventory = new JButton("Inventory");
+        inventory = new JButton("Customer Transactions");
         setPreferredSize (new Dimension (395, 156));
         delete.addActionListener(new ActionListener() {
             @Override
@@ -390,21 +387,42 @@ class ExecPanel extends JPanel {
         JButton bestMonth;
         JButton noStores;
         JButton worstMonth, avgSales, storeSales, highestPrice, lowestPrice;
+        JButton nestedAgg;
         //SELECT AVG(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM
-
-        bestMonth = new JButton("Highest Grossing Month");
-        noStores = new JButton("# of Stores");
-        worstMonth = new JButton("Lowest Grossing Month");
+        String[] aggstring = {"MAX", "MIN", "SUM", "AVG", "COUNT"};
+        String[] aggstring1 = {"noStores", "avgSales", "storeSales", "highestPrice","lowestPrice"};
+        JComboBox agglist1 = new JComboBox(aggstring);
+        JComboBox agglist2 = new JComboBox(aggstring);
+        noStores = new JButton("Total Sales");
         avgSales = new JButton("Average Sales");
+        storeSales = new JButton("Sales per Store");
+        highestPrice = new JButton("Highest Price");
+        lowestPrice = new JButton("Lowest Price");
+        nestedAgg = new JButton("Nested Aggregation");
+
 
 
         setPreferredSize (new Dimension (395, 156));
-        bestMonth.addActionListener(new ActionListener() {
+        nestedAgg.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String agg1 = (String)agglist1.getSelectedItem();
+                String agg2 = (String)agglist2.getSelectedItem();
+
                 try {
                     stmt = c.createStatement();
-                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                    rs = stmt.executeQuery("SELECT "+agg2+"(x.PRODPRICE) as PRICE FROM (SELECT "+agg1+"(PRODPRICE) as PRODPRICE, STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM) x");
+                    String[][] data = new String[1][1];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("PRICE");
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"$"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
                 } catch (Exception d) {
 
                 }
@@ -415,27 +433,132 @@ class ExecPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     stmt = c.createStatement();
-                    stmt.executeQuery("SELECT SUM(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    rs = stmt.executeQuery("SELECT SUM(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    String[][] data = new String[20][2];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("SUM(PRODPRICE)");
+                        data[i][1] = rs.getString("STORENUM");
+
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"SUM(PRODPRICE)", "STORENUM"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
                 } catch (Exception d) {
 
                 }
             }
         });
-        worstMonth.addActionListener(new ActionListener() {
+        avgSales.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     stmt = c.createStatement();
-                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
+                    rs = stmt.executeQuery("SELECT AVG(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    String[][] data = new String[20][2];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("AVG(PRODPRICE)");
+                        data[i][1] = rs.getString("STORENUM");
+
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"AVG(PRODPRICE)", "STORENUM"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
+                } catch (Exception d) {
+
+                }
+            }
+        });
+        highestPrice.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    stmt = c.createStatement();
+                    rs = stmt.executeQuery("SELECT MAX(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    String[][] data = new String[20][2];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("MAX(PRODPRICE)");
+                        data[i][1] = rs.getString("STORENUM");
+
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"MAX(PRODPRICE)", "STORENUM"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
+                } catch (Exception d) {
+
+                }
+            }
+        });
+        lowestPrice.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    stmt = c.createStatement();
+                    rs = stmt.executeQuery("SELECT MIN(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    String[][] data = new String[20][2];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("MIN(PRODPRICE)");
+                        data[i][1] = rs.getString("STORENUM");
+
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"MIN(PRODPRICE)", "STORENUM"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
+                } catch (Exception d) {
+
+                }
+            }
+        });
+        storeSales.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    stmt = c.createStatement();
+                    rs = stmt.executeQuery("SELECT COUNT(PRODPRICE), STORENUM FROM PRODUCTS p, TRANSACTIONS t WHERE p.UPCCODE = t.UPCCODE GROUP BY STORENUM");
+                    String[][] data = new String[20][2];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("COUNT(PRODPRICE)");
+                        data[i][1] = rs.getString("STORENUM");
+
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"COUNT(PRODPRICE)", "STORENUM"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
                 } catch (Exception d) {
 
                 }
             }
         });
 
-        add(bestMonth);
+        //add(bestMonth);
         add(noStores);
-        add(worstMonth);
+        //add(worstMonth);
+        add(avgSales);
+        add(storeSales);
+        add(highestPrice);
+        add(lowestPrice);
+        add(agglist1);
+        add(agglist2);
+        add(nestedAgg);
 
     }
 
@@ -465,23 +588,24 @@ class DeletePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
-                //System.out.print(text);
+
                 try {
                     stmt = c.createStatement();
-                    //stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " + text);
+                    stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " + text);
                     // stmt.execute(statement) for non queries
                     int i = 0;
-                    rs = stmt.executeQuery("SELECT * FROM REGION");
-                    String[] cols = {"REGION", "ADD"};
-                    String[][] table = new String[5][2];
+                    rs = stmt.executeQuery("SELECT * FROM EMPLOYEE");
+                    String[] cols = {"EMPLOYEEID", "EMPLOYEENAME", "EMPLOYEEPOSITION"};
+                    String[][] table = new String[50][3];
                     while (rs.next()) {
                         //print each result
-                        System.out.println(rs.getString("REGNNAME"));
-                        table[i][0] = rs.getString("REGNNAME");
-                        table[i][1] = "A";
+
+                        table[i][0] = rs.getString("EMPLOYEEID");
+                        table[i][1] = rs.getString("EMPLOYEENAME");
+                        table[i][2] = rs.getString("EMPLOYEEPOSITION");
                         i++;
                     }
-                    System.out.print(table[1][1]);
+
                     JFrame tableFrame = new JFrame("Results");
                     tableFrame.getContentPane().add(new TablePanel(table, cols));
                     tableFrame.pack();
@@ -509,7 +633,7 @@ class UpdatePanel extends JPanel {
     private ResultSet rs;
     public UpdatePanel (Connection c) {
         l1 = new JLabel("UPCcode");
-        l2 = new JLabel("Name");
+        l2 = new JLabel("Price");
         l3 = new JLabel("Price");
         l4 = new JLabel("Stock");
         t1 = new JTextField(10);
@@ -532,35 +656,45 @@ class UpdatePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String UPCcode = t1.getText();
-                String name = t2.getText();
-                String price = t3.getText();
-                String stock = t4.getText();
+                String price = t2.getText();
                 if (UPCcode.equals("")) {
-
-                } else if (name.equals("")){
 
                 } else if (price.equals("")) {
 
                 } else {
                     try {
                         stmt = c.createStatement();
-                        stmt.execute("UPDATE PRODUCT SET name = " + name + ", price = " + price + "WHERE upccode = " + UPCcode);
+
+                        stmt.executeUpdate("UPDATE PRODUCTS SET PRODPRICE = " + price + " WHERE UPCCODE = " + UPCcode);
+                        rs = stmt.executeQuery("SELECT * FROM PRODUCTS");
+                        String[][] data = new String[70][3];
+                        int i = 0;
+                        while(rs.next()) {
+                            data[i][0] = rs.getString("UPCcode");
+                            data[i][2] = rs.getString("PRODNAME");
+                            data[i][1] = rs.getString("PRODPRICE");
+                            i++;
+                        }
+                        JFrame tableFrame = new JFrame("Results");
+                        String[] cols = {"UPCcode","PRODPRICE","PRODNAME"};
+                        tableFrame.getContentPane().add(new TablePanel(data, cols));
+                        tableFrame.pack();
+                        tableFrame.setVisible(true);
+
                     } catch (Exception d) {
                         System.out.print("Update error");
                     }
                 }
-                System.out.print(UPCcode);
-                //jcomp4.selectAll();
+
+
             }
         });
         add(l1);
         add(l2);
-        add(l3);
-        add(l4);
+
         add(t1);
         add(t2);
-        add(t3);
-        add(t4);
+
         add(b1);
     }
 
@@ -576,8 +710,8 @@ class InventoryPanel extends JPanel {
     private ResultSet rs;
 
     public InventoryPanel (Connection c) {
-        l1 = new JLabel("Inventory");
-        l2 = new JLabel("Employee Number");
+        l1 = new JLabel("Customer Transactions");
+        l2 = new JLabel("Customer Number");
         t1 = new JTextField();
         b1 = new JButton("Go");
         setLayout(null);
@@ -590,11 +724,23 @@ class InventoryPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
-                System.out.print(text);
+
                 try {
                     stmt = c.createStatement();
-                    stmt.executeQuery("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = ");
-
+                    rs = stmt.executeQuery("SELECT c.CUSTNO, ITEMSBOUGHT, s.ADDRESS FROM TRANSACTIONS t, STORE s, CUSTOMER c WHERE t.CUSTNO = c.CUSTNO AND t.STORENUM = s.STORENUM AND c.CUSTNO = "+ text);
+                    String[][] data = new String[40][3];
+                    int i = 0;
+                    while(rs.next()) {
+                        data[i][0] = rs.getString("CUSTNO");
+                        data[i][1] = rs.getString("ITEMSBOUGHT");
+                        data[i][2] = rs.getString("ADDRESS");
+                        i++;
+                    }
+                    JFrame tableFrame = new JFrame("Results");
+                    String[] cols = {"CUSTNO","ITEMSBOUGHT","ADDRESS"};
+                    tableFrame.getContentPane().add(new TablePanel(data, cols));
+                    tableFrame.pack();
+                    tableFrame.setVisible(true);
                 } catch (Exception d) {
 
                 }
