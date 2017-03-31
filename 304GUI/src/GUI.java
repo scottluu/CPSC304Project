@@ -351,12 +351,15 @@ class CustPanel extends JPanel {
 }
 class EmpPanel extends JPanel {
 
+    private Statement stmt;
 
+    private ResultSet rs;
     public EmpPanel (Connection c) {
-            JButton update, delete, inventory;
+            JButton update, delete, inventory, bestCust;
         update = new JButton("Update");
         delete = new JButton("Delete");
         inventory = new JButton("Customer Transactions");
+        bestCust = new JButton("Best Customer");
         setPreferredSize (new Dimension (395, 156));
         delete.addActionListener(new ActionListener() {
             @Override
@@ -387,9 +390,33 @@ class EmpPanel extends JPanel {
                 frame.setVisible(true);
             }
         });
+        bestCust.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                stmt = c.createStatement();
+                rs = stmt.executeQuery("SELECT CUSTNO FROM TRANSACTIONS t WHERE UPCCODE IN (SELECT UPCCODE FROM PRODUCTS) GROUP BY CUSTNO HAVING COUNT(*) = (SELECT COUNT(*) FROM PRODUCTS)");
+                String[][] data = new String[1][1];
+                int i = 0;
+                while(rs.next()) {
+                    data[i][0] = rs.getString("CUSTNO");
+                    i++;
+                }
+                JFrame tableFrame = new JFrame("Results");
+                String[] cols = {"CUSTNO"};
+                tableFrame.getContentPane().add(new TablePanel(data, cols));
+                tableFrame.pack();
+                tableFrame.setVisible(true);
+
+            } catch (Exception d) {
+
+            }
+            }
+        });
         add(delete);
         add(update);
         add(inventory);
+        add(bestCust);
 
     }
 
@@ -640,7 +667,6 @@ class DeletePanel extends JPanel {
 }
 class UpdatePanel extends JPanel {
 
-
     JLabel l1,l2,l3,l4;
     JTextField t1,t2,t3,t4;
     JButton b1;
@@ -732,7 +758,7 @@ class InventoryPanel extends JPanel {
         setLayout(null);
         setPreferredSize (new Dimension (395, 156));
         b1.setBounds(310,120,70,30);
-        l1.setBounds(0,0,120,30);
+        l1.setBounds(0,0,150,30);
         l2.setBounds(0,20,120,30);
         t1.setBounds(130 ,20,70,30);
         b1.addActionListener(new ActionListener() {
