@@ -186,8 +186,11 @@ class CustPanel extends JPanel {
     public void updateResults(Connection c) {
     	String columns = "*";
     	String where = "";
+        String[][] data = new String[20][3];
+
     	if (valid) {
     		if (cb1.isSelected()) {
+
     			columns = "PRODPRICE";
     		}
     		if (cb2.isSelected()) {
@@ -209,7 +212,7 @@ class CustPanel extends JPanel {
     				where += " AND PRODNAME LIKE '%" + t2.getText() + "%'";
     			}
     		}
-            String[][] data = new String[20][3];
+
             try {
                 stmt = c.createStatement();
 
@@ -233,7 +236,7 @@ class CustPanel extends JPanel {
                     i++;
                 }
             } catch (Exception d) {
-                System.out.print("it didnt work");
+
             }
     		JFrame tableFrame = new JFrame("Results");
             String[] cols = {};
@@ -677,7 +680,6 @@ class UpdatePanel extends JPanel {
                 } else {
                     try {
                         stmt = c.createStatement();
-
                         stmt.executeUpdate("UPDATE PRODUCTS SET PRODPRICE = " + price + " WHERE UPCCODE = " + UPCcode);
                         rs = stmt.executeQuery("SELECT * FROM PRODUCTS");
                         String[][] data = new String[70][3];
