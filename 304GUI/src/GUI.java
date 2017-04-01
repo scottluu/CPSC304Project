@@ -699,10 +699,12 @@ class UpdatePanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String UPCcode = t1.getText();
                 String price = t2.getText();
-                if (UPCcode.equals("")) {
-
-                } else if (price.equals("")) {
-
+                // USING MYSQL WHERE CHECK STATEMENTS NOT SUPPORTED
+                if (Integer.parseInt(price) > 100) {
+                    JOptionPane.showMessageDialog(null,
+                            "Price must be less than 100",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 } else {
                     try {
                         stmt = c.createStatement();
