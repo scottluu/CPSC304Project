@@ -633,7 +633,13 @@ class DeletePanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
-
+                if (text.equals("")){
+                    JOptionPane.showMessageDialog(null,
+                            "Please enter an Employee Number",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 try {
                     stmt = c.createStatement();
                     stmt.execute("DELETE FROM EMPLOYEE WHERE EMPLOYEEID = " + text);
@@ -709,6 +715,13 @@ class UpdatePanel extends JPanel {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                if (UPCcode.equals("")){
+                    JOptionPane.showMessageDialog(null,
+                            "Please enter a UPC code",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (Integer.parseInt(price) > 100) {
                     JOptionPane.showMessageDialog(null,
                             "Price must be less than 100",
@@ -776,7 +789,13 @@ class InventoryPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = t1.getText();
-
+                if (text.equals("")){
+                    JOptionPane.showMessageDialog(null,
+                            "Please enter a Customer Number",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 try {
                     stmt = c.createStatement();
                     rs = stmt.executeQuery("SELECT c.CUSTNO, ITEMSBOUGHT, s.ADDRESS FROM TRANSACTIONS t, STORE s, CUSTOMER c WHERE t.CUSTNO = c.CUSTNO AND t.STORENUM = s.STORENUM AND c.CUSTNO = "+ text);
