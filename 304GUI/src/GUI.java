@@ -41,7 +41,7 @@ public class GUI extends JPanel implements ActionListener {
     private final String password = "password";
 	private final String serverName = "josephso.me";
 	private final int portNumber = 3306;
-	private final String dbName = "CS304Project";
+	private final String dbName = "304test";
 	private Statement stmt;
 	private Connection conn;
 	private ResultSet rs;
@@ -641,13 +641,13 @@ class DeletePanel extends JPanel {
                     int i = 0;
                     rs = stmt.executeQuery("SELECT * FROM EMPLOYEE");
                     String[] cols = {"EMPLOYEEID", "EMPLOYEENAME", "EMPLOYEEPOSITION"};
-                    String[][] table = new String[50][3];
+                    String[][] table = new String[70][3];
                     while (rs.next()) {
                         //print each result
 
                         table[i][0] = rs.getString("EMPLOYEEID");
                         table[i][1] = rs.getString("EMPLOYEENAME");
-                        table[i][2] = rs.getString("EMPLOYEEPOSITION");
+                        table[i][2] = rs.getString("EMPLOYEEPOS");
                         i++;
                     }
 
@@ -656,7 +656,7 @@ class DeletePanel extends JPanel {
                     tableFrame.pack();
                     tableFrame.setVisible(true);
                 } catch (Exception d) {
-
+                System.out.print("not working");
                 }
                 //jcomp4.selectAll();
             }
@@ -702,6 +702,13 @@ class UpdatePanel extends JPanel {
                 String UPCcode = t1.getText();
                 String price = t2.getText();
                 // USING MYSQL WHERE CHECK STATEMENTS NOT SUPPORTED
+                if (price.equals("")){
+                    JOptionPane.showMessageDialog(null,
+                            "Please enter a price",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (Integer.parseInt(price) > 100) {
                     JOptionPane.showMessageDialog(null,
                             "Price must be less than 100",
