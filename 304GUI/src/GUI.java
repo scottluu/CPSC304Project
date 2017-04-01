@@ -200,16 +200,18 @@ class CustPanel extends JPanel {
     				columns += ", PRODNAME";
     			}
     		}
-    		if (rb1.isSelected()) {
-    			where = "WHERE PRODPRICE <= " + t1.getText();
-    		} else if (rb2.isSelected()) {
-    			where = "WHERE PRODPRICE > " + t1.getText();
-    		}
-    		if (!t2.getText().equals("")) {
+            if (!t1.getText().trim().equals("")) {
+        		if (rb1.isSelected()) {
+        			where = "WHERE PRODPRICE <= " + t1.getText().trim();
+        		} else if (rb2.isSelected()) {
+        			where = "WHERE PRODPRICE > " + t1.getText().trim();
+        		}
+            }
+    		if (!t2.getText().trim().equals("")) {
     			if (where.equals("")) {
-    				where = "WHERE PRODNAME LIKE '%" + t2.getText() + "%'";
+    				where = "WHERE PRODNAME LIKE '%" + t2.getText().trim() + "%'";
     			} else {
-    				where += " AND PRODNAME LIKE '%" + t2.getText() + "%'";
+    				where += " AND PRODNAME LIKE '%" + t2.getText().trim() + "%'";
     			}
     		}
 
